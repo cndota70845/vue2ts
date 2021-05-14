@@ -7,6 +7,7 @@ import 'ant-design-vue/dist/antd.css';
 
 Vue.config.productionTip = false;
 Vue.use(antd);
+Vue.prototype.VUE_APP_BASE_URL = process.env.VUE_APP_BASE_URL;// 定义 BASE_URL
 
 new Vue({
   router,

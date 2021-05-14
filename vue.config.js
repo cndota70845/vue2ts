@@ -1,8 +1,4 @@
-const path = require('path')
- 
-function resolve(dir){
-    return path.join(__dirname, dir)
-}
+const { resolve } = require('path');
 
 const config={
     publicPath: './',
@@ -20,6 +16,10 @@ const config={
         }
     },
     outputDir:'dist',
+    alias: {
+        // 键必须以斜线开始和结束
+        '/@/': resolve(__dirname, './src/')
+    }
     
 }
 module.exports = config;
