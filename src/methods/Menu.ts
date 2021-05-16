@@ -36,7 +36,7 @@ function floatMenu (orgin:IMenu[]) :IFlaot[]{
                         name:element.name,
                         icon:element.icon,
                         parent:item.key,
-                        path:item.path,
+                        path:element.path,
                         parentPath:item.path,
                         idx:`${index}`
                     });

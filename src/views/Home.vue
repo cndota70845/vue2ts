@@ -4,17 +4,29 @@
     <a-layout id="components-layout-demo-custom-trigger">
     <a-layout-sider v-model="collapsed" :trigger="null" collapsible>
       <div class="logo" />
-      <a-menu :theme="menu.theme" :mode="menu.mode" :default-selected-keys="menu.selected" @select="menuSelect">
-        <a-menu-item key="HTML">
-          <a-icon type="video-camera" />
-          <span>HTML</span>
-        </a-menu-item>
-        <a-sub-menu :key="item" v-for="item in ['background','#fff','padding']">
-          <span slot="title"><a-icon type="appstore" /><span>{{item}}</span></span>
-          <a-menu-item :key="`${item}components`">
-            Option 3
-          </a-menu-item>
-        </a-sub-menu>
+      <a-menu 
+        :theme="menu.theme" 
+        :mode="menu.mode" 
+        :default-selected-keys="[menu.selected]"
+        :defaultOpenKeys="menu.defaultOpenKeys"
+        @select="menuSelect"
+      >
+        <template v-for="item in menu.data">
+          <template v-if="!item.hasOwnProperty('parent')">
+            <a-menu-item :key="item.key" v-if="!item.idx.includes('sub')">
+              <a-icon :type="item.icon" />
+              <span>{{item.name}}</span>
+            </a-menu-item>
+            <a-sub-menu :key="item.key" :title="item.name" v-else>
+              <template v-for="element in menu.data">
+                <a-menu-item :key="element.key" v-if="element.parent && item.key === element.parent">
+                  <a-icon :type="element.icon" />
+                  <span>{{element.name}}</span>
+                </a-menu-item>
+              </template>
+            </a-sub-menu>
+          </template>
+        </template>
       </a-menu>
     </a-layout-sider>
     <a-layout>
@@ -46,24 +58,31 @@ interface ILooseObject {
 
 @Component({})
 export default class Home extends Vue {
-  public menu = {
-    data:MENU.floatMenu(menu),
-    theme:'dark',
-    mode:'vertical',
-    selected:[]
-  };
-  public collapsed = false;
-
   get routerName () :string{
     return (this as ILooseObject).$route.name;
   }
 
-  defaultSelected (val :string) {
-    this.menu.selected = [val];
+  public menu = {
+    data:MENU.floatMenu(menu),
+    theme:'dark',
+    mode:'inline',
+    selected:'',
+    defaultOpenKeys:['']
+  };
+  public collapsed = false;
+
+  defaultSelected (val :string) :void{
+    this.menu.selected = val;
+    this.menu.data.forEach(item => {
+      if (item.parent && item.key === val) {
+        this.menu.defaultOpenKeys.push(item.parent);
+        this.menu.defaultOpenKeys.splice(0,1);
+      }
+    });
   }
 
   @Watch('routerName')
-  routerNameChange(newVal :string) {
+  routerNameChange(newVal :string) :void{
     this.defaultSelected(newVal);
   }
 

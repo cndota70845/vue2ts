@@ -14,12 +14,8 @@ const config={
         if(process.env.NODE_ENV === 'production'){
           config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
         }
+        config.resolve.alias = {'/@/': resolve(__dirname, './src/')}
     },
-    outputDir:'dist',
-    alias: {
-        // 键必须以斜线开始和结束
-        '/@/': resolve(__dirname, './src/')
-    }
-    
+    outputDir:'dist'
 }
 module.exports = config;

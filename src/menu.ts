@@ -3,23 +3,23 @@ const menu = [
         key:'HTML',
         name:'HTML',
         icon:`issues-close`,
-        path:'./HTML'
+        path:'/HTML'
     },
     {
         key:'CSS',
         name:'CSS',
         icon:`check-square`,
-        path:'./CSS',
+        path:'/CSS',
         children:[
             {
                 key:'LESS',
-                name:'Stylus',
+                name:'LESS',
                 icon:`check-square`,
                 path:'/LESS'
             },
             {
                 key:'SASS',
-                name:'Stylus',
+                name:'SASS',
                 icon:`check-square`,
                 path:'/SASS'
             },
@@ -35,25 +35,25 @@ const menu = [
         key:'JavaScript',
         name:'JavaScript',
         icon:`edit`,
-        path:'./JavaScript'
+        path:'/JavaScript'
     },
     {
         key:'Graphics',
         name:'Graphics',
         icon:`highlight`,
-        path:'./Graphics'
+        path:'/Graphics'
     },
     {
         key:'HTTP',
         name:'HTTP',
         icon:`strikethrough`,
-        path:'./HTTP'
+        path:'/HTTP'
     },
     {
         key:'API',
         name:'API',
         icon:`radius-setting`,
-        path:'./API'
+        path:'/API'
     }
 ]
 

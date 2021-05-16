@@ -14,6 +14,21 @@ const routes: Array<RouteConfig> = [
         path: '/HTML',
         name: 'HTML',
         component: () => import('../views/HTML')
+      },
+      {
+        path: '/LESS',
+        name: 'LESS',
+        component: () => import('../views/CSS/LESS')
+      },
+      {
+        path: '/SASS',
+        name: 'SASS',
+        component: () => import('../views/CSS/SASS')
+      },
+      {
+        path: '/Stylus',
+        name: 'Stylus',
+        component: () => import('../views/CSS/Stylus')
       }
     ]
   }
