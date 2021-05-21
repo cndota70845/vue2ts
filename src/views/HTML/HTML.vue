@@ -5,6 +5,11 @@
 </template>
 
 <script lang="ts">
+
+interface ILooseObject {
+  [key: string]: any
+}
+
 import { Vue,Component } from 'vue-property-decorator';
 @Component({})
 export default class HTML extends Vue {
@@ -99,6 +104,17 @@ export default class HTML extends Vue {
         // myWeakMap.set(key,value)
         //         .set(key2,value2);
         // console.log(myWeakMap,myWeakMap.has(key));
+        const arr5 = ['xiaoming','xiaohong','xiaogang'];
+        let iter = arr5[Symbol.iterator]();
+        console.log(iter,iter.next(),iter.next(),iter.next(),iter.next());
+        for (let val of arr5) {
+            console.log(val);
+        }
+        this.init();
+    }
+    async init () :Promise<void>{
+        const res = await (this as ILooseObject).$api.user.getUserGET();
+        console.log(res);
     }
 }
 </script>

@@ -8,8 +8,10 @@
         :theme="menu.theme" 
         :mode="menu.mode" 
         :default-selected-keys="[menu.selected]"
-        :defaultOpenKeys="menu.defaultOpenKeys"
+        :open-keys="menu.openKeys"
         @select="menuSelect"
+        @openChange="onOpenChange"
+        @click="onOpenClick"
       >
         <template v-for="item in menu.data">
           <template v-if="!item.hasOwnProperty('parent')">
@@ -17,7 +19,8 @@
               <a-icon :type="item.icon" />
               <span>{{item.name}}</span>
             </a-menu-item>
-            <a-sub-menu :key="item.key" :title="item.name" v-else>
+            <a-sub-menu :key="item.key" v-else>
+              <span slot="title"><a-icon :type="item.icon" /><span>{{item.name}}</span></span>
               <template v-for="element in menu.data">
                 <a-menu-item :key="element.key" v-if="element.parent && item.key === element.parent">
                   <a-icon :type="element.icon" />
@@ -67,23 +70,52 @@ export default class Home extends Vue {
     theme:'dark',
     mode:'inline',
     selected:'',
-    defaultOpenKeys:['']
+    openKeys:['']
   };
   public collapsed = false;
 
-  defaultSelected (val :string) :void{
+  defaultSelected (val :string) :void {
     this.menu.selected = val;
+    this.defaultOpen(val);
+  }
+
+  defaultOpen (val :string) :void {
     this.menu.data.forEach(item => {
       if (item.parent && item.key === val) {
-        this.menu.defaultOpenKeys.push(item.parent);
-        this.menu.defaultOpenKeys.splice(0,1);
+        this.menu.openKeys.push(item.parent);
+        this.menu.openKeys.splice(0,1);
+      }
+    });
+  }
+
+  onOpenChange(openKeys: string[]) :void{
+    if (JSON.stringify(openKeys) === '[]') {
+      this.menu.openKeys.push('');
+      this.menu.openKeys.splice(0,1);
+    }
+    else {
+      openKeys.splice(0,1);
+      let key = openKeys.toString();
+      console.log(key);
+      this.menu.openKeys.push(key);
+      this.menu.openKeys.splice(0,1);
+    }
+  }
+
+  onOpenClick () :void{
+    console.log(arguments);
+    const key = arguments[0].key;
+    this.menu.data.forEach(item => {
+      if (item.key === key && !item.parent) {
+        this.menu.openKeys.push('');
+        this.menu.openKeys.splice(0,1);
       }
     });
   }
 
   @Watch('routerName')
   routerNameChange(newVal :string) :void{
-    this.defaultSelected(newVal);
+    this.menu.selected = newVal;
   }
 
   created () :void{

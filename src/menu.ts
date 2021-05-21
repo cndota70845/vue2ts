@@ -28,14 +28,34 @@ const menu = [
                 name:'Stylus',
                 icon:`check-square`,
                 path:'/Stylus'
-            },
+            }
         ]
     },
     {
         key:'JavaScript',
         name:'JavaScript',
         icon:`edit`,
-        path:'/JavaScript'
+        path:'/JavaScript',
+        children:[
+            {
+                key:'VUE',
+                name:'VUE',
+                icon:`check-square`,
+                path:'/VUE'
+            },
+            {
+                key:'REACT',
+                name:'REACT',
+                icon:`check-square`,
+                path:'/REACT'
+            },
+            {
+                key:'Angular',
+                name:'Angular',
+                icon:`check-square`,
+                path:'/Angular'
+            }
+        ]
     },
     {
         key:'Graphics',
