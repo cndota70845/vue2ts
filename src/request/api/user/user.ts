@@ -4,6 +4,9 @@ const filed = {
     //表格列表Get
     getUserGET (params: {name?:string,id?:number,password?:string}) :any{        
         return axios.get(`/api/getUser/`,{params:params});   
+    },
+    deleteUserDELETE (params: {id?:string}) :any{        
+        return axios.get(`/api/deleteUser/`,{params:params});   
     }
 }
 export default filed;

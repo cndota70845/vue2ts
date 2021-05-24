@@ -13,6 +13,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "css-loader": "^5.2.4",
+    "firstnpm_lya_lis": "^1.0.0",
     "js-cookie": "^2.2.1",
     "less": "^4.1.1",
     "less-loader": "7.x",

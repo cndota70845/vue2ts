@@ -4236,6 +4236,11 @@ find-up@^4.0.0:
     locate-path "^5.0.0"
     path-exists "^4.0.0"
 
+firstnpm_lya_lis@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/firstnpm_lya_lis/-/firstnpm_lya_lis-1.0.0.tgz#7ddcb21588f1e9b8f18afe6d284e696542d937be"
+  integrity sha512-rwDNt+r/HHMSM2xGGpnuo8OjsRnsajd1QBS80E+spL7b/4aPL3ax7k5UAZWbD+du3kxijIXPaY/plpBLkRdG0w==
+
 flat-cache@^2.0.1:
   version "2.0.1"
   resolved "https://registry.npm.taobao.org/flat-cache/download/flat-cache-2.0.1.tgz#5d296d6f04bda44a4630a301413bdbc2ec085ec0"

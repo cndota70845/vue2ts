@@ -14,7 +14,8 @@ const config={
         if(process.env.NODE_ENV === 'production'){
           config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
         }
-        config.resolve.alias = {'/@/': resolve(__dirname, './src/')}
+        // config.resolve.alias = {'/@/': resolve(__dirname, './src/')}
+        config.resolve.alias.set('/@/',resolve('src/'))
     },
     outputDir:'dist'
 }
