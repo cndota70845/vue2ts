@@ -1,23 +1,46 @@
 <template>
     <div class="HTML">
-        <div class="titile">
-            <a-button type="primary" @click="formModal = true" :style="{'width':'80px'}">新建</a-button>
-        </div>
         <a-table 
             :dataSource="dataSource" 
             :columns="columns" 
             :rowKey="rowKey"
             bordered
         >
+            <template
+                v-for="col in ['name', 'password']"
+                :slot="col"
+                slot-scope="text, record"
+            >
+                <div contenteditable="" :key="col">
+                    <a-input
+                        v-if="record.editable"
+                        style="margin: -5px 0"
+                        :defaultValue="text"
+                        @change="e => handleChange(e.target.value, col)"
+                    />
+                    <template v-else>
+                    {{ text }}
+                    </template>
+                </div>
+            </template>
             <div slot="action" slot-scope="text, record">
-                <a-button type="danger" @click="confirm(record)">删除</a-button>
+                <span v-if="record.editable">
+                    <a-button @click="() => save()" class="BTN" type="primary">保存</a-button>
+                    <a-popconfirm title="Sure to cancel?" @confirm="() => cancel(record)">
+                        <a-button type="danger" class="BTN">取消</a-button>
+                    </a-popconfirm>
+                </span>
+                <span v-else>
+                    <a-button type="primary" :disabled="editingKey.hasOwnProperty('id')?true:false" @click="() => edit(record)" class="BTN">编辑</a-button>
+                    <a-button type="danger" @click="confirm(record)" class="BTN">删除</a-button>
+                </span>
             </div>
         </a-table>
         <a-modal
             title="提示"
             :visible="deleteModal"
             @ok="() => remove()"
-            @cancel="() => cancel()"
+            @cancel="() => clear()"
             :closable="false"
             :maskClosable="false"
             >
@@ -43,13 +66,15 @@ const columns = [
         title: '姓名',
         dataIndex: 'name',
         key: 'name',
-        align:'center'
+        align:'center',
+        scopedSlots: { customRender: 'name' }
     },
     {
         title: '密码',
         dataIndex: 'password',
         key: 'password',
-        align:'center'
+        align:'center',
+        scopedSlots: { customRender: 'password' }
     },
     {
         title: '操作',
@@ -64,12 +89,13 @@ import { Vue, Component } from 'vue-property-decorator';
 import { message } from 'ant-design-vue';
 @Component({})
 export default class HTML extends Vue {
-    public dataSource = [];
+    public dataSource :{id:string}[] = [];
     public columns = columns;
     public rowKey = 'id';
     public formModal = false;
     public deleteModal = false;
-    public chooseID = undefined;
+    public chooseID = '';
+    public editingKey:ILooseObject = {};
 
     created () :void{
         this.init();
@@ -90,12 +116,10 @@ export default class HTML extends Vue {
         else if (res.data.msg) {
             message.warning(res.data.msg);
         }
-        this.cancel();
+        this.clear();
     }
-
-
-    cancel () {
-        this.chooseID = undefined;
+    clear () :void{
+        this.chooseID = '';
         this.deleteModal = false;
     }
 
@@ -110,7 +134,53 @@ export default class HTML extends Vue {
             this.dataSource = res.data.data;
         }
     }
-    
+
+    handleChange (value:string, col:string) :void{
+        this.editingKey[col] = value;
+    }
+
+    edit(record :ILooseObject) :void{
+        let id = record && record.id || -1;
+        if (id >= 0) {
+            const data = (this.dataSource as {id:string}[]).map((item)=>{
+                if (item.id == id) {
+                    let newItem = item;
+                    newItem['editable'] = true;
+                    return newItem;
+                }
+                else {
+                    return item;
+                }
+            });
+            this.dataSource = data;
+            this.editingKey = {
+                id:id
+            }
+        }
+    }
+
+    async save() :Promise<void>{
+        const params = this.editingKey;
+        console.log(params);
+    }
+
+    cancel(record :ILooseObject) :void{
+        let id = record && record.id || -1;
+        if (id >= 0) {
+            const data = (this.dataSource as {id:string,editable?:boolean}[]).map((item)=>{
+                if (item.id == id) {
+                    let newItem = item;
+                    delete newItem.editable;
+                    return newItem;
+                }
+                else {
+                    return item;
+                }
+            });
+            this.dataSource = data;
+        }
+        this.editingKey = {};
+    }
 }
 </script>
 

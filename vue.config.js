@@ -15,7 +15,9 @@ const config={
           config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
         }
         // config.resolve.alias = {'/@/': resolve(__dirname, './src/')}
-        config.resolve.alias.set('/@/',resolve('src/'))
+        config.resolve.alias = {
+            '/@/':resolve('src/')
+        }
     },
     outputDir:'dist'
 }
