@@ -7,6 +7,9 @@ const filed = {
     },
     deleteUserDELETE (params: {id?:string}) :any{        
         return axios.get(`/api/deleteUser/`,{params:params});   
+    },
+    editUserPOST (params: {id:string}) :any{
+        return axios.post(`/api/editUser`,params);
     }
 }
 export default filed;
