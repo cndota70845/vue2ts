@@ -1,5 +1,13 @@
 <template>
     <div class="HTML">
+        <a-affix :offset-top="top">
+            <div class="add">
+                <a-button
+                    style="width: 60px"
+                    @click="onChangeModel(true)"
+                >+</a-button>
+            </div>
+        </a-affix>
         <a-table 
             :dataSource="dataSource" 
             :columns="columns" 
@@ -46,6 +54,39 @@
             >
             <p>是否删除该条数据</p>
         </a-modal>
+        <a-modal v-model="addModal" title="新增数据">
+            <template slot="footer">
+                <a-button 
+                    key="back" 
+                    @click="onChangeModel(false)"
+                >Return
+                </a-button>
+                <a-button 
+                    key="submit" 
+                    type="primary" 
+                    :loading="loading" 
+                    @click="onChangeModel(false)"
+                >Submit
+                </a-button>
+            </template>
+            <div class="form">
+                <a-form :form="form">
+                    <a-form-item
+                        :label-col="formItemLayout.labelCol"
+                        :wrapper-col="formItemLayout.wrapperCol"
+                        label="用户名"
+                    >
+                    <a-input
+                        v-decorator="[
+                        'username',
+                        { rules: [{ required: true, message: 'Please input your name' }] },
+                        ]"
+                        placeholder="Please input your name"
+                    />
+                    </a-form-item>
+                </a-form>
+            </div>
+        </a-modal>
     </div>
 </template>
 
@@ -54,6 +95,11 @@
 interface ILooseObject {
   [key: string]: any
 }
+
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
+};
 
 const columns = [
     {
@@ -96,6 +142,11 @@ export default class HTML extends Vue {
     public deleteModal = false;
     public chooseID = '';
     public editingKey:ILooseObject = {};
+    public addModal = false;
+    public loading = false;
+    public top = 10;
+    public form = this.$form.createForm(this, { name: 'user' });
+    public formItemLayout = formItemLayout;
 
     created () :void{
         this.init();
@@ -103,6 +154,10 @@ export default class HTML extends Vue {
 
     init () :void{
         this.update();
+    }
+
+    onChangeModel (val:boolean):void {
+        this.addModal = val;
     }
 
     async remove () :Promise<void>{
@@ -118,6 +173,7 @@ export default class HTML extends Vue {
         }
         this.clear();
     }
+
     clear () :void{
         this.chooseID = '';
         this.deleteModal = false;
@@ -161,7 +217,10 @@ export default class HTML extends Vue {
 
     async save() :Promise<void>{
         const params = this.editingKey;
-        console.log(params);
+        const res = await (this as ILooseObject).$api.user.editUserPatch(params);
+        if (res && res.code === 1) {
+            message.info(res.data.msg);
+        }
     }
 
     cancel(record :ILooseObject) :void{
