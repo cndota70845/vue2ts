@@ -11,5 +11,8 @@ const filed = {
     editUserPatch (params: {name?:string,id?:number,password?:string}) :any{        
         return axios.post(`/api/editUser/`,params as any);   
     },
+    addUserPost (params: {name?:string, password?:string}) :any{
+        return axios.post(`/api/addUser`,params as any);
+    }
 }
 export default filed;

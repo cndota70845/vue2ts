@@ -44,6 +44,7 @@
                 </span>
             </div>
         </a-table>
+        <a-pagination show-quick-jumper :default-current="2" :total="500" @change="onChange" />
         <a-modal
             title="提示"
             :visible="deleteModal"
@@ -54,7 +55,12 @@
             >
             <p>是否删除该条数据</p>
         </a-modal>
-        <a-modal v-model="addModal" title="新增数据">
+        <a-modal 
+            :visible="addModal" 
+            title="新增数据"
+            :closable="false"
+            :maskClosable="false"
+        >
             <template slot="footer">
                 <a-button 
                     key="back" 
@@ -65,7 +71,7 @@
                     key="submit" 
                     type="primary" 
                     :loading="loading" 
-                    @click="onChangeModel(false)"
+                    @click="onSubmit()"
                 >Submit
                 </a-button>
             </template>
@@ -75,14 +81,23 @@
                         :label-col="formItemLayout.labelCol"
                         :wrapper-col="formItemLayout.wrapperCol"
                         label="用户名"
+                        class="form_item"
                     >
-                    <a-input
-                        v-decorator="[
-                        'username',
-                        { rules: [{ required: true, message: 'Please input your name' }] },
-                        ]"
-                        placeholder="Please input your name"
-                    />
+                        <a-input
+                            placeholder="Please input your name"
+                            v-decorator="rules.username"
+                        />
+                    </a-form-item>
+                    <a-form-item
+                        :label-col="formItemLayout.labelCol"
+                        :wrapper-col="formItemLayout.wrapperCol"
+                        label="密码"
+                        class="form_item"
+                    >
+                        <a-input-password
+                            placeholder="Please input your name"
+                            v-decorator="rules.password"
+                        />
                     </a-form-item>
                 </a-form>
             </div>
@@ -97,9 +112,20 @@ interface ILooseObject {
 }
 
 const formItemLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
+  labelCol: { span: 7 },
+  wrapperCol: { span: 15 },
 };
+
+const rules = {
+    username:[
+        'name',
+        { rules: [{ required: true, message: 'Please input your username!' }] }
+    ],
+    password:[
+        'password',
+        { rules: [{ required: true, message: 'Please input your password!' }] }
+    ]
+}
 
 const columns = [
     {
@@ -145,10 +171,12 @@ export default class HTML extends Vue {
     public addModal = false;
     public loading = false;
     public top = 10;
-    public form = this.$form.createForm(this, { name: 'user' });
     public formItemLayout = formItemLayout;
+    public form = null;
+    public rules = rules;
 
     created () :void{
+        this.form = (this as ILooseObject).$form.createForm(this, {});
         this.init();
     }
 
@@ -158,6 +186,25 @@ export default class HTML extends Vue {
 
     onChangeModel (val:boolean):void {
         this.addModal = val;
+    }
+
+    onSubmit () :void{
+        (this as ILooseObject).form.validateFields(async (errors, values) => {
+            if (!errors) {
+                const res = await (this as ILooseObject).$api.user.addUserPost(values);
+                if (res && res.data.code === 1) {
+                    this.update();
+                    message.info(res.data.msg);
+                }
+                else if (res.data.msg) {
+                    message.warning(res.data.msg);
+                }
+                this.onChangeModel(false);
+            }
+            else {
+                message.error('表单验证错');
+            }
+        });
     }
 
     async remove () :Promise<void>{
