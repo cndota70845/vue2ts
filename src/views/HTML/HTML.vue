@@ -85,10 +85,6 @@ const columns = [
     }
 ]
 
-;(function (window) {
-    window.alert('hello world');
-}(window));
-
 import { Vue, Component } from 'vue-property-decorator'; 
 import { message } from 'ant-design-vue';
 @Component({})
@@ -158,21 +154,14 @@ export default class HTML extends Vue {
             });
             this.dataSource = data;
             this.editingKey = {
-                id:id,
-                name:record.name,
-                password:record.password
+                id:id
             }
         }
     }
 
     async save() :Promise<void>{
         const params = this.editingKey;
-        const res = await (this as ILooseObject).$api.user.editUserPOST(params);
-        if (res && res.data.code === 1) {
-            message.success(res.data.msg);
-            this.editingKey = {};
-            this.update();
-        } 
+        console.log(params);
     }
 
     cancel(record :ILooseObject) :void{
