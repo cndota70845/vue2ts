@@ -13,6 +13,7 @@
             :columns="columns" 
             :rowKey="rowKey"
             bordered
+            :pagination="false"
         >
             <template
                 v-for="col in ['name', 'password']"
@@ -44,7 +45,15 @@
                 </span>
             </div>
         </a-table>
-        <a-pagination show-quick-jumper :default-current="2" :total="500" @change="onChange" />
+        <a-row type="flex" justify="end" class="pagination">
+            <a-pagination  
+                show-quick-jumper 
+                :defaultPageSize="pagination.size"
+                :total="pagination.total"
+                v-model="pagination.current"
+                @change="onChangePage" 
+            />
+        </a-row>
         <a-modal
             title="提示"
             :visible="deleteModal"
@@ -174,6 +183,11 @@ export default class HTML extends Vue {
     public formItemLayout = formItemLayout;
     public form = null;
     public rules = rules;
+    public pagination = {
+        current: 1,
+        total: 0,
+        size: 10
+    }
 
     created () :void{
         this.form = (this as ILooseObject).$form.createForm(this, {});
@@ -186,9 +200,16 @@ export default class HTML extends Vue {
 
     onChangeModel (val:boolean):void {
         this.addModal = val;
+        if (!val) {
+            (this as ILooseObject).form.resetFields();
+        }
     }
 
-    onSubmit () :void{
+    onChangePage ():void {
+        this.update ();
+    }
+
+    onSubmit () :void {
         (this as ILooseObject).form.validateFields(async (errors, values) => {
             if (!errors) {
                 const res = await (this as ILooseObject).$api.user.addUserPost(values);
@@ -232,9 +253,14 @@ export default class HTML extends Vue {
     }
 
     async update () :Promise<void>{
-        const res = await (this as ILooseObject).$api.user.getUserGET();
+        const params = {
+            page_size:10,
+            page_current: this.pagination.current
+        }
+        const res = await (this as ILooseObject).$api.user.getUserGET(params);
         if (res && res.data.code === 1) {
             this.dataSource = res.data.data;
+            this.pagination.total = res.data.total;
         }
     }
 
