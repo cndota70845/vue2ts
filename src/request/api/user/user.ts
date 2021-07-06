@@ -18,7 +18,10 @@ const filed = {
         return axios.post(`/api/editUser/`,params as any);   
     },
     addUserPost (params: {name?:string, password?:string}) :any{
-        return axios.post(`/api/addUser`,params as any);
+        return axios.post(`/api/addUser/`,params as any);
+    },
+    fileUpload (params: {id?:number, file?:File}) :any{
+        return axios.post(`/api/fileUpload/`,params as any,{headers:{'Content-Type':'multipart/form-data;charset=UTF-8'}})
     }
 }
 export default filed;

@@ -32,6 +32,17 @@
                     </template>
                 </div>
             </template>
+            <template
+                slot="personalFile"
+                slot-scope="text, record"
+            >
+                <fileUpload
+                    :defaultFile="record.file"
+                    :key="record.id"
+                    :fileId="record.id"
+                    @upload="onFileChange"
+                ></fileUpload>
+            </template>
             <div slot="action" slot-scope="text, record">
                 <span v-if="record.editable">
                     <a-button @click="() => save()" class="BTN" type="primary">保存</a-button>
@@ -158,6 +169,13 @@ const columns = [
         scopedSlots: { customRender: 'password' }
     },
     {
+        title: '个人简介',
+        dataIndex: 'personalFile',
+        key: 'personalFile',
+        align:'center',
+        scopedSlots: { customRender: 'personalFile' }
+    },
+    {
         title: '操作',
         dataIndex: 'action',
         key: 'action',
@@ -168,7 +186,12 @@ const columns = [
 
 import { Vue, Component } from 'vue-property-decorator'; 
 import { message } from 'ant-design-vue';
-@Component({})
+import fileUpload from './fileUpload.vue';
+@Component({
+    components: {
+        fileUpload
+    }
+})
 export default class HTML extends Vue {
     public dataSource :{id:string}[] = [];
     public columns = columns;
@@ -202,6 +225,18 @@ export default class HTML extends Vue {
         this.addModal = val;
         if (!val) {
             (this as ILooseObject).form.resetFields();
+        }
+    }
+
+    async onFileChange () :Promise<void>{
+        const params = new FormData();
+        const obj = arguments[0];
+        for (let key in obj) {
+            params.append(key,obj[key]);
+        }
+        const res = await (this as ILooseObject).$api.user.fileUpload(params);
+        if (res) {
+            console.log(res);
         }
     }
 
@@ -291,8 +326,10 @@ export default class HTML extends Vue {
     async save() :Promise<void>{
         const params = this.editingKey;
         const res = await (this as ILooseObject).$api.user.editUserPatch(params);
-        if (res && res.code === 1) {
+        if (res && res.data.code === 1) {
             message.info(res.data.msg);
+            this.editingKey = {};
+            this.update();
         }
     }
 
