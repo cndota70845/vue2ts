@@ -37,10 +37,11 @@
                 slot-scope="text, record"
             >
                 <fileUpload
-                    :defaultFile="record.file"
-                    :key="record.id"
+                    :defaultFile="isNull(record.file)?null:record.file"
+                    :key="onKey(record.id)"
                     :fileId="record.id"
                     @upload="onFileChange"
+                    @delete="onFileDelete"
                 ></fileUpload>
             </template>
             <div slot="action" slot-scope="text, record">
@@ -187,6 +188,7 @@ const columns = [
 import { Vue, Component } from 'vue-property-decorator'; 
 import { message } from 'ant-design-vue';
 import fileUpload from './fileUpload.vue';
+
 @Component({
     components: {
         fileUpload
@@ -212,6 +214,10 @@ export default class HTML extends Vue {
         size: 10
     }
 
+    onKey (id: number) :string{
+        return `${id}_${new Date()}`;
+    }
+
     created () :void{
         this.form = (this as ILooseObject).$form.createForm(this, {});
         this.init();
@@ -228,6 +234,16 @@ export default class HTML extends Vue {
         }
     }
 
+    isNull (obj:{any}) :boolean{
+        var sign = false;
+        for (let k in obj) {
+            sign = obj[k] === null
+                ? true
+                : false;
+        }
+        return sign;
+    }
+
     async onFileChange () :Promise<void>{
         const params = new FormData();
         const obj = arguments[0];
@@ -235,8 +251,18 @@ export default class HTML extends Vue {
             params.append(key,obj[key]);
         }
         const res = await (this as ILooseObject).$api.user.fileUpload(params);
-        if (res) {
-            console.log(res);
+        if (res && res.data.code === 1) {
+            message.info(res.data.msg);
+            this.update();
+        }
+    }
+
+    async onFileDelete () :Promise<void>{
+        const params = arguments[0];
+        const res = await (this as ILooseObject).$api.user.fileDelete(params);
+        if (res && res.data.code === 1) {
+            message.info(res.data.msg);
+            this.update();
         }
     }
 

@@ -22,6 +22,9 @@ const filed = {
     },
     fileUpload (params: {id?:number, file?:File}) :any{
         return axios.post(`/api/fileUpload/`,params as any,{headers:{'Content-Type':'multipart/form-data;charset=UTF-8'}})
+    },
+    fileDelete (params: {id?:string}) :any{
+        return axios.get(`/api/fileDelete/`,{params:params});
     }
 }
 export default filed;
